@@ -4,9 +4,13 @@
 ####################################################################################
 .server <- function()
 {
-  require(TraMineR)
-  require(reshape2)
-  require(tidyverse)
+  # require(TraMineR)
+  # require(reshape2)
+  # require(ggplot2)
+  # require(tibble)
+  # require(tidyr)
+  # require(stringr)
+  # require(ggpubr)
   
   
 	## MODEL FILE
@@ -290,7 +294,14 @@
 	# Main Server Function
 	##
 	server <- function(input, output, session) {
-
+	  require(TraMineR)
+	  require(reshape2)
+	  require(ggplot2)
+	  require(tibble)
+	  require(tidyr)
+	  require(stringr)
+	  require(ggpubr)
+	  
 		model <- loadModel()
 		cat('\nSERVER:  MODEL STRUCT\n')
 		print(model)
@@ -835,10 +846,6 @@
 	output$analysis_output_plots <- renderPlot({
 
 	 	if(input$analysis_output_plots_button) {
-	 		require(tidyverse)
-	 		require(ggpubr)
-	 		require(reshape2)
-
 	 		model <- readRDS(MODEL_FILE)
 
 	 		measuresAll <- c('distance','predictability','simplicity','grouping','motif')

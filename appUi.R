@@ -70,8 +70,8 @@
 										a("Sequence distance function details", href="https://rdrr.io/cran/TraMineR/man/seqdist.html", target="_blank"),
 							      		br(),br()
 							      	),
-									selectInputUIdistance('analysis_distance_function', 'Distance Function'),
-									selectInputUInorm('analysis_distance_norm', 'Normalization') #,
+									selectInputUIdistance('analysis_distance_function', 'Distance Function')#,
+									# selectInputUInorm('analysis_distance_norm', 'Normalization') #,
 									# sliderTextUItenths('analysis_indel_cost', "INDEL Cost")
 						      	)
 						      )
@@ -98,11 +98,11 @@
 				icon=icon('sliders')	
 				), 
 				
-				## 1. Tab 3. Outputs -------------
-				tabPanel("Outputs", 
+				## 1. Tab 3. Results -------------
+				tabPanel("Results", 
 					fluidRow(
 				    	column(width = 12,
-				    		h3("Sequence Analysis Results Summary Output"),
+				    		h3("Sequence Analysis Results Summary"),
 				    		verbatimTextOutput('analysis_run_value') %>% withSpinner(color="#0dc5c1")
 				    	),
 					),

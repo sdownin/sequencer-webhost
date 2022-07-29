@@ -43,7 +43,8 @@ $(document).ready(function(){
 	// DISABLE NAV TABS ON LOAD BY REMOVING data-toggle="tab"
 	// THEN ADD ATTRIBUTE BACK WHEN ADVANCED TO THAT STAGE OF NAVIGATION
 	deactivateTab('Measures');
-	deactivateTab('Outputs');
+	//deactivateTab('Outputs');
+	deactivateTab('Results');
 	deactivateTab('Plots');
 
 	// NAVIGATION
