@@ -54,7 +54,8 @@ $(document).ready(function(){
 	});
 	// 3. Outputs
 	$('button[id^=analysis_run]').click(function(){
-		activateTab('Outputs');
+		//activateTab('Outputs');
+		activateTab('Results');
 	});
 	// 4. Plots
 	$('button[id^=analysis_output_plots_button]').click(function(){

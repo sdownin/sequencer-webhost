@@ -245,7 +245,9 @@
 	  vec <- vec[vec>0]
 	  #compute entropy
 	  ent <-  -sum(vec * log(vec, base=logbase))
-	  return(ent)
+	  # because shannon entropy is negatively related to HHI (e.g., simplicity)
+	  # take the negative of shannon measure to proxy simplicity
+	  return( -ent )
 	}
 
 	##

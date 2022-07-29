@@ -138,7 +138,7 @@
 							h3("Sequence Analysis Plots"),
 							h5("(Resize the figure by click-dragging the plot region's bottom right corner.)"),
 							jqui_resizable(
-								plotOutput('analysis_output_plots', height=450, width='100%') 
+								plotOutput('analysis_output_plots', height=550, width='95%') 
 							) %>% withSpinner(color="#0dc5c1") 
     			    		# plotOutput('analysis_output_plot_distance', height=270, width='100%'),
     			    		# plotOutput('analysis_output_plot_predictability', height=270, width='100%'),
