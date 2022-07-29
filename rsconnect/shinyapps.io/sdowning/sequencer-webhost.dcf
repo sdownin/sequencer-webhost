@@ -1,0 +1,13 @@
+name: sequencer-webhost
+title: sequencer-webhost
+username:
+account: sdowning
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6710351
+bundleId: 6144035
+url: https://sdowning.shinyapps.io/sequencer-webhost/
+when: 1659059135.11967
+lastSyncTime: 1659059135.11967
+asMultiple: FALSE
+asStatic: FALSE
