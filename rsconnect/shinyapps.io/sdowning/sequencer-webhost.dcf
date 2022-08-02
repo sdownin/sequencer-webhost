@@ -5,10 +5,10 @@ account: sdowning
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6710351
-bundleId: 6144588
+bundleId: 6158150
 url: https://sdowning.shinyapps.io/sequencer-webhost/
-when: 1659074468.48159
-lastSyncTime: 1659074468.48159
+when: 1659453180.7672
+lastSyncTime: 1659453180.7672
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: tmp_sequencer_data_model.rds
