@@ -18,7 +18,7 @@
 						titlePanel("Load Sequence Alphabet, Substitution Costs, and Data (CSV Files)"),
 						sidebarLayout(
 							sidebarPanel(
-								fileInputUIAlphabet("analysis_file_alphabet", '1. Sequence Alphabet')
+								fileInputUIAlphabet("analysis_file_alphabet", '1. Sequence Alphabet', 'alphabet_sequence_with_missing')
 							),
 							mainPanel(
 								tableOutputSummaryAlphabet("analysis_file_alphabet_summary", "Alphabet Summary") 
@@ -27,7 +27,7 @@
 						# hr(),
 						sidebarLayout(
 							sidebarPanel(
-								fileInputUISubcostmat("analysis_file_subcostmat", '2. Substitution Costs', 'subcostmat_header', 'subcostmat_fileEncoding')
+								fileInputUISubcostmat("analysis_file_subcostmat", '2. Substitution Costs', 'subcostmat_row_col_names', 'subcostmat_fileEncoding')
 							),
 							mainPanel(
 								tableOutputSummaryUI("analysis_file_subcostmat_summary", "Substitution Cost Matrix")
@@ -37,7 +37,7 @@
 						# hr(),
 						sidebarLayout(
 							sidebarPanel(
-								fileInputUI("analysis_file_data", '3. Sequence Data', 'seqdata_header', 'seqdata_fileEncoding')
+								fileInputUI("analysis_file_data", '3. Sequence Data', 'seqdata_header', 'seqdata_fileEncoding', 'seqdata_drop_empty_actors')
 							),
 							mainPanel(
 								tableOutputUI("analysis_file_data_table"),

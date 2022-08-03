@@ -40,6 +40,11 @@ function activateTab(dataVal) {
 
 $(document).ready(function(){
 
+  // DISABLE SUBCOST MATRIX ROW/COLUMN CHECKBOX (force default TRUE --> row/col names required)
+  $('#subcostmat_row_col_names').prop('disabled', true).hide();
+  //$('#subcostmat_row_col_names').attr('disabled', true);
+  
+
 	// DISABLE NAV TABS ON LOAD BY REMOVING data-toggle="tab"
 	// THEN ADD ATTRIBUTE BACK WHEN ADVANCED TO THAT STAGE OF NAVIGATION
 	deactivateTab('Measures');

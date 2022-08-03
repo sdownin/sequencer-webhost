@@ -132,7 +132,7 @@ actionButtonUIcheckdata <- function(id, label) {
 }
 
 
-fileInputUIAlphabet <- function(fileId, heading) {
+fileInputUIAlphabet <- function(fileId, heading, withMissingCheck) {
 	tagList(
 		fileInput(fileId, h4(heading),
 			multiple = F,
@@ -143,6 +143,7 @@ fileInputUIAlphabet <- function(fileId, heading) {
 		),
 		#tags$hr(),
 		checkboxInput("header", "Header", TRUE),
+		checkboxInput(withMissingCheck, "Add Missing Category", FALSE),
 		# selectInput("alphabet_encoding", "Encoding", c()),
 		selectInput("alphabet_fileEncoding", "File Encoding", fileEncodingVec),
 		selectInput("alphabet_selectCategoryColumn", "Category Column", c())
@@ -150,7 +151,7 @@ fileInputUIAlphabet <- function(fileId, heading) {
 	)
 }
 
-fileInputUISubcostmat <- function(fileId, heading, headerId, fileEncodingId) {
+fileInputUISubcostmat <- function(fileId, heading, rowColNamesId, fileEncodingId) {
 	tagList(
 		fileInput(fileId, h4(heading),
 			multiple = F,
@@ -159,12 +160,12 @@ fileInputUISubcostmat <- function(fileId, heading, headerId, fileEncodingId) {
 			  "text/comma-separated-values,text/plain",
 			  ".csv")
 		),
-		checkboxInput(headerId, "Header", TRUE),
+		checkboxInput(rowColNamesId, "Row/Column Names", TRUE),
 		selectInput(fileEncodingId, "File Encoding", fileEncodingVec)
 	)
 }
 
-fileInputUI <- function(fileId, heading, headerId, fileEncodingId) {
+fileInputUI <- function(fileId, heading, headerId, fileEncodingId, dropEmptyActorsId) {
 	tagList(
 		fileInput(fileId, h4(heading),
 			multiple = F,
@@ -174,6 +175,7 @@ fileInputUI <- function(fileId, heading, headerId, fileEncodingId) {
 			  ".csv")
 		),
 		checkboxInput(headerId, "Header", TRUE), 
+		checkboxInput(dropEmptyActorsId, "Drop Empty Actors", TRUE), 
 		# checkboxInput(rownamesId, "Row Names", TRUE),
 		selectInput(fileEncodingId, "File Encoding", fileEncodingVec),
 		selectInput("alphabet_selectPeriodColumn", "Period Column", c())

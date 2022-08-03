@@ -337,7 +337,7 @@
 			for (i in 1:ncol(df)) {
 			  colnm <- names(df)[i]
 			  .x <- df[[i]] ## get vector from i'th col
-			  li[[colnm]] <- .x[which( !is.null(.x) & !is.nan(.x) & !is.na(.x) )]
+			  li[[colnm]] <- .x[which( !is.null(.x) & !is.nan(.x) & !is.na(.x) & .x!='' )]
 			}
 			# names(li)
 			# li <- plyr::dlply(df function(col){
@@ -354,6 +354,13 @@
 				# selected = input$alphabet_selectCategoryColumn
 				)
 
+			## ADD MISSING STATE TO ALPHABET FOR MISSING ACTION
+			if (input$alphabet_sequence_with_missing) {
+			  catCol <- input$alphabet_selectCategoryColumn
+			  missingCat <- NA #'NA'
+			  li[[catCol]] <- c(li[[catCol]], missingCat)  ## Add a missing category
+			}
+			
 			## add var name abbreviations
 			varnamemap <- if (input$alphabet_selectCategoryColumn %in% names(li)) {
 					getNameAbbrevList(li[[input$alphabet_selectCategoryColumn]])
@@ -400,8 +407,8 @@
 			model <- loadModel()
 
 			## INPUT
-			df <- read.csv(inFile$datapath, header = input$subcostmat_header, na.strings=c('','""'), stringsAsFactors=FALSE,
-				# row.names=input$subcostmat_rownames,
+			df <- read.csv(inFile$datapath, header = input$subcostmat_row_col_names, na.strings=c('','""'), stringsAsFactors=FALSE,
+				row.names=ifelse(input$subcostmat_row_col_names, 1, NULL),
 				fileEncoding=input$subcostmat_fileEncoding, #'UTF-8',
 				# quote = c('"'),
 				check.names=TRUE,
@@ -414,36 +421,83 @@
 			alphabet <- model$analysis_alphabet$x
 			actionCol <- model$analysis_alphabet$actionCol
 			varnamemap <- model$analysis_alphabet$varnamemap
+			
+			if (input$alphabet_sequence_with_missing) 
+			{
+			  ## Add empty category to varname map
+			  varnamemap <- c(varnamemap, list(`NA`=NA))
+			  
+			  
+			  # ##-------- 
+			  # ## ADD MSSING CATEGORY TO SUBCOSTMAT IF NECESARY
+			  # ## TODO: DEBUG contingencies aligning sequence data categories and subcost mat empty row/col
+			  # actionCol <- model$analysis_alphabet$actionCol
+			  # hasMissingAction <- any(is.na(dat[[actionCol]]))
+			  # missingActionSymbols <- c('NA','','.','%')
+			  # hasMissingActionInSubCostMat <- any(c('NA',' ','','.','%',NA) %in% c(unlist(dimnames(sm))))
+			  # if (hasMissingAction &  ! hasMissingActionInSubCostMat) {
+			  #   sm <- rbind(sm, rep(1,ncol(sm))) ## add row of 1's at bottom
+			  #   sm <- cbind(sm, data.frame(`NA`=c(rep(1,nrow(sm)-1),0)) )
+			  #   # sm <- cbind(sm, c(rep(1,nrow(sm)-1),0)) ## add column of 1's (=previous nrow) with 0 at end (zeros on diag)
+			  #   dimnames(sm)[[2]] <- dimnames(sm)[[1]]  ## empty dimname missing for column, socbind(sm, data.frame(`NA`=c(rep(1,nrow(sm)-1),0))) copy row dimnames1 to col dimnames2
+			  #   # colnames(sm)[ncol(sm)] <- NA
+			  #   
+			  #   model$analysis_subcostmat$x
+			  #   saveRDS(model, file=MODEL_FILE)
+			  # }
+			  # ##--------			  
+			} else {
+			  ## else remove the empty category if with_missing = FALSE
+			  varnamemap <- varnamemap[which( ! names(varnamemap) %in% c('NA','NA.','',NA))]
+			}
+
+			## Number of Categories
 			ncats <- length(varnamemap)
 			
 			# print(c('DEBUG varnamemap:',varnamemap))
 			# print(c('DEBUG subcostmat df str: ', str(df)))
-
-			## automatically determine column names
-			nrows <- nrow(df)
-			ncols <- ncol(df)
-			hasColNames <- nrows > ncats ## if 1 more row than #cats --> has col name
-			hasRowNames <- ncols > ncats ## if 1 more col than #cats --> has row name
-			## remove name row or col if present, and then assign rownames(), colnames()
-			df <- if (hasColNames & hasRowNames) { # is Square
-				# .rownames <-  df[,1]; # .colnames <-  df[1,]
-					df <- df[-1,-1]
-				} else if (nrows > ncols) {
-					## varnames in 1st row  (as column headers)
-					df <- df[-1, ]
-				} else if (ncols > nrows) {
-					## varnames in 1st col (as row names)
-					df <- df[ ,-1]
-				} else {
-					df ## NO CHANGE (no col names and no row names)
-				}
-			colnames(df) <- names(varnamemap)
-			rownames(df) <- names(varnamemap)
-
-			mat <- as.matrix(df)
-
+		
+			# print('DEBUG 1')
+			# return()
+			
+			## remove row/col names if set and keep square matrix for substitution cost
+			if (input$subcostmat_row_col_names)
+			{
+			  nrows <- nrow(df)
+			  ncols <- ncol(df)
+			  
+			  ## regardless missing 1 row or 1 col, take the square matrix of what rows/cols have in common
+			  n <- min( nrows, ncols ) 
+			  df2 <- df[ (nrows-n+1):nrows, (ncols-n+1):ncols ]
+			  
+			  mat <- as.matrix(df2)
+			  rownames(mat) <- names(varnamemap)[1:n]
+			  colnames(mat) <- names(varnamemap)[1:n]
+			  
+			  # ## remove name row or col if present, and then assign rownames(), colnames()
+			  # df <- if (hasColNames & hasRowNames) { # is Square
+			  #   # .rownames <-  df[,1]; # .colnames <-  df[1,]
+			  #   df <- df[-1,-1]
+			  # } else if (nrows > ncols) {
+			  #   ## varnames in 1st row  (as column headers)
+			  #   df <- df[-1, ]
+			  # } else if (ncols > nrows) {
+			  #   ## varnames in 1st col (as row names)
+			  #   df <- df[ ,-1]
+			  # } else {
+			  #   df ## NO CHANGE (no col names and no row names)
+			  # }
+			  # colnames(df) <- names(varnamemap)
+			  # rownames(df) <- names(varnamemap)
+			  # mat <- as.matrix(df)
+			} else {
+			  mat <- as.matrix(df)
+			}
+			
 			## SAVE
-			saveModel(loadModel(), xname='analysis_subcostmat', x=mat, xpath=inFile$datapath)
+			model$analysis_alphabet$varnamemap <- varnamemap
+			saveModel(model, xname='analysis_subcostmat', x=mat, xpath=inFile$datapath)
+			# saveModel(loadModel(), xname='analysis_subcostmat', x=mat, xpath=inFile$datapath)
 			
 			print(mat)
 		})
@@ -485,8 +539,8 @@
 			model <- loadModel()
 			
 			## INPUT
-			df <- read.csv(inFile$datapath, header = TRUE, sep=',', fill=TRUE, stringsAsFactors=FALSE,
-				fileEncoding=input$seqdata_fileEncoding, #'UTF-8',
+			df <- read.csv(inFile$datapath, header = input$seqdata_header, sep=',', fill=TRUE, stringsAsFactors=FALSE,
+				ifelse(exists(input$seqdata_fileEncoding), input$seqdata_fileEncoding, input$alphabet_fileEncoding), #'UTF-8',
 				# quote = c('"'),
 				check.names=TRUE,
 				strip.white=TRUE
@@ -512,6 +566,13 @@
 			aCols <- c(actionCol,actorCol)
 			aColIdxs <- which( names(df) %in% aCols)
 			naColIdxs <- which( ! names(df) %in% aCols)
+			
+			## Exit if both actor and action columns are not in dataframe
+			if (any(is.na(aColIdxs) | is.infinite(aColIdxs))) {
+			  ## TODO: STRESS TEST THIS CHECK
+			  print("Both actor and action columns not in dataframe. Returning NULL.")
+			  return()
+			}
 			
 			cnames <- names(df)
 			# periodCol <- cnames[ (max(aColIdxs)+1) ]
@@ -563,6 +624,17 @@
 			periods <- unique(df[,periodCol])
 			actors <- as.character(alphabet[[actorCol]])
 			actionAlphabet <- as.character(alphabet[[actionCol]])
+			
+			##-----------------------------------------------
+			## LIMIT ACTORS TO THOSE WITH ACTIONS IN DATAFRAME
+			if (input$seqdata_drop_empty_actors) {
+			  idx.actions <- which( ! is.null(df[[actionCol]]) & !is.na(df[[actionCol]]) & df[[actionCol]] != '')
+			  actorsNonempty <- sort(unique(df[idx.actions,actorCol]))
+			  actors <- actorsNonempty
+			  alphabet[[actorCol]] <- actorsNonempty
+			  model$analysis_alphabet$x$Actor <- actorsNonempty
+			}
+			##-----------------------------------------------
 
 			# seqdefs <- list()
 			# for (t in 1:length(periods))  #length(periods)
@@ -582,7 +654,7 @@
 			  t.l <- longDf2SeqList(t.df, actors, actorCol, actionCol)
 			  t.ldf <- seqList2Df(t.l)
 			  right <- 'DEL'  # left <- 'NA' # gaps <- 'NA'
-			  seqdef(t.ldf, alphabet=actionAlphabet, right=right)
+			  seqdef(t.ldf, alphabet=actionAlphabet, right=right) ## missing=''
 			}
 			names(seqdefs) <- periods
 			model$seqdefs <- seqdefs
@@ -650,6 +722,8 @@
 				periodCol <- model$analysis_alphabet$periodCol
 				right <- 'DEL'  # left <- 'NA' # gaps <- 'NA' ## seqdef parameter
 
+				with.missing <- model$analysis_alphabet$with.missing
+				
 				periods <- unique(dat[,periodCol])
 				actors <- as.character(alphabet[[actorCol]])
 				actionAlphabet <- as.character(alphabet[[actionCol]])
@@ -697,7 +771,7 @@
   		      for (t in 1:npds)  #length(periods)
   		      {
   		        pd <- periods[t]
-				      t.xdist <- seqdist(seqdefs[[t]], method=method, norm=norm, sm=sm, with.missing=TRUE)
+				      t.xdist <- seqdist(seqdefs[[t]], method=method, norm=norm, sm=sm, with.missing=with.missing)
 				      dimnames(t.xdist) <- list(actors, actors)
 				      distance[[pd]] <- t.xdist
 				      incProgress(1/npds, detail=sprintf('Period: %s',pd))
